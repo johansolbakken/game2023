@@ -1,6 +1,7 @@
 #pragma once
 
 #include "window.h"
+#include "mesh.h"
 
 #include <memory>
 
@@ -20,4 +21,5 @@ private:
 private:
     bool m_running = true;
     std::unique_ptr<Window> m_window;
+    std::unique_ptr<Mesh> m_mesh;
 };
