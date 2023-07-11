@@ -2,193 +2,98 @@
 
 #include <glad/glad.h>
 #include <vector>
+#include <memory>
 
 #include "shader.h"
+#include "buffer.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-std::vector<float> quadVertices = {
-    -0.5f, -0.5f, 0.0f, 0.0f,
-    0.5f, -0.5f, 1.0f, 0.0f,
-    0.5f, 0.5f, 1.0f, 1.0f,
-    -0.5f, 0.5f, 0.0f, 1.0f};
-
-std::vector<unsigned int> quadIndices = {
-    0, 1, 2,
-    2, 3, 0};
-
 struct RendererData
 {
-    uint32_t quadVAO;
-    uint32_t quadVBO;
-    uint32_t quadEBO;
-    Shader* quadColorShader;
-    Shader* meshShader;
-    Shader* meshDirectionalLightShader;
+	uint32_t quadVAO = 0;
+	uint32_t quadVBO = 0;
+	uint32_t quadEBO = 0;
 
-    glm::mat4 viewMatrix;
-    glm::mat4 projectionMatrix;
+	glm::mat4 projectionMatrix = glm::mat4(1.0f);
+
+	Shader* quadColorShader = nullptr;
 };
 
-static RendererData s_data;
+static RendererData s_data = {};
 
 void Renderer::init()
 {
-    glGenVertexArrays(1, &s_data.quadVAO);
-    glGenBuffers(1, &s_data.quadVBO);
-    glGenBuffers(1, &s_data.quadEBO);
+	s_data.quadColorShader = new Shader("shaders/quad_color.vs", "shaders/quad_color.fs");
 
-    glBindVertexArray(s_data.quadVAO);
+	std::vector<float> quadVertices = {
+			// positions		// texture coords	// color
+			-0.5f, -0.5f, 0.0f, 0.0f, 1.0f,
+			0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+			0.5f, 0.5f, 1.0f, 1.0f, 0.0f,
+			-0.5f, 0.5f, 0.0f, 1.0f, 1.0f,
+	};
 
-    glBindBuffer(GL_ARRAY_BUFFER, s_data.quadVBO);
-    glBufferData(GL_ARRAY_BUFFER, quadVertices.size() * sizeof(float), &quadVertices[0], GL_STATIC_DRAW);
+	std::vector<uint32_t> quadIndices = {
+			0, 1, 2,
+			2, 3, 0
+	};
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, s_data.quadEBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, quadIndices.size() * sizeof(unsigned int), &quadIndices[0], GL_STATIC_DRAW);
+	glGenVertexArrays(1, &s_data.quadVAO);
+	glGenBuffers(1, &s_data.quadVBO);
+	glGenBuffers(1, &s_data.quadEBO);
 
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)0);
+	glBindVertexArray(s_data.quadVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, s_data.quadVBO);
 
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)(2 * sizeof(float)));
+	glBufferData(GL_ARRAY_BUFFER, quadVertices.size() * sizeof(float), &quadVertices[0], GL_STATIC_DRAW);
 
-    // generate quad color shader
-    s_data.quadColorShader = new Shader(R"(
-        #version 330 core
-        layout (location = 0) in vec2 aPos;
-        void main()
-        {
-            gl_Position = vec4(aPos, 0.0, 1.0);
-        }
-    )", R"(
-        #version 330 core
-        out vec4 FragColor;
-        uniform vec4 uColor;
-        void main()
-        {
-            FragColor = uColor;
-        }
-    )");
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, s_data.quadEBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, quadIndices.size() * sizeof(uint32_t), &quadIndices[0], GL_STATIC_DRAW);
 
-    s_data.meshShader = new Shader(
-        R"(
-        #version 330 core
-        layout (location = 0) in vec3 aPos;
-        layout (location = 1) in vec3 aNormal;
-        layout (location = 2) in vec2 aTexCoords;
+	// vertex positions
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	// vertex texture coords
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float)));
 
-        out vec3 FragPos;
-        out vec3 Normal;
-        out vec2 TexCoords;
-        
-        uniform mat4 uModelMatrix;
-        uniform mat4 uViewMatrix;
-        uniform mat4 uProjectionMatrix;
-        
-        void main()
-        {
-            gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * vec4(aPos, 1.0);
-        }
-        
-        )",
-        R"(
-        #version 330 core
-        out vec4 FragColor;
-
-        in vec3 FragPos;
-        in vec3 Normal;
-
-        void main()
-        {
-            FragColor = vec4(Normal, 1.0f);
-        }
-        )");
-
-    s_data.viewMatrix = glm::mat4(1.0f);
-    s_data.projectionMatrix = glm::mat4(1.0f);
-
-    s_data.meshDirectionalLightShader = new Shader(
-        R"(
-        #version 330 core
-        layout (location = 0) in vec3 aPos;
-        layout (location = 1) in vec3 aNormal;
-        layout (location = 2) in vec2 aTexCoords;
-
-        out vec3 FragPos;
-        out vec3 Normal;
-        out vec2 TexCoords;
-        
-        uniform mat4 uModelMatrix;
-        uniform mat4 uViewMatrix;
-        uniform mat4 uProjectionMatrix;
-        
-        void main()
-        {
-            gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * vec4(aPos, 1.0);
-        }
-        
-        )",
-        R"(
-        #version 330 core
-        out vec4 FragColor;
-
-        in vec3 FragPos;
-        in vec3 Normal;
-        in vec2 TexCoords;
-
-        uniform vec3 uLightColor;
-        uniform vec3 uLightDirection;
-
-        void main()
-        {
-            vec3 lightColor = uLightColor;
-            vec3 lightDirection = normalize(uLightDirection);
-
-            vec3 ambient = 0.1 * lightColor;
-            vec3 norm = normalize(Normal);
-            float diff = max(dot(norm, lightDirection), 0.0);
-            vec3 diffuse = diff * lightColor;
-
-            vec3 result = (ambient + diffuse) * vec3(1.0, 0.5, 0.31);
-            FragColor = vec4(result, 1.0f);
-        }
-        )");
+	glBindVertexArray(0);
 }
 
-void Renderer::clear(const glm::vec4 &color)
+void Renderer::clear(const glm::vec4& color)
 {
-    glClearColor(color.r, color.g, color.b, color.a);
-    glClear(GL_COLOR_BUFFER_BIT);
+	glClearColor(color.r, color.g, color.b, color.a);
+	glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void Renderer::updateViewport(int width, int height)
 {
-    glViewport(0, 0, width, height);
-    s_data.projectionMatrix = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
+	glViewport(0, 0, width, height);
 }
 
-void Renderer::drawQuad(const glm::vec2 &position, const glm::vec2 &size, const glm::vec4 &color)
+void Renderer::beginScene(const glm::mat4& viewProjectionMatrix)
 {
-    s_data.quadColorShader->use();
-    s_data.quadColorShader->setVec4("uColor", color);
-
-    glBindVertexArray(s_data.quadVAO);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	s_data.projectionMatrix = viewProjectionMatrix;
 }
 
-void Renderer::drawMesh(const Mesh &mesh, const glm::mat4 &modelMatrix)
+void Renderer::endScene()
 {
-    s_data.meshDirectionalLightShader->use();
-    s_data.meshDirectionalLightShader->setMat4("uModelMatrix", modelMatrix);
-    s_data.meshDirectionalLightShader->setMat4("uViewMatrix", s_data.viewMatrix);
-    s_data.meshDirectionalLightShader->setMat4("uProjectionMatrix", s_data.projectionMatrix);
-    s_data.meshDirectionalLightShader->setVec3("uLightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-    s_data.meshDirectionalLightShader->setVec3("uLightDirection", glm::vec3(0.0f, -1.0f, 0.0f));
+}
 
-    glBindVertexArray(mesh.getVAO());
-    glDrawElements(GL_TRIANGLES, mesh.getIndices().size(), GL_UNSIGNED_INT, 0);
+void Renderer::drawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color)
+{
+	s_data.quadColorShader->use();
+	s_data.quadColorShader->setVec4("u_color", color);
+	s_data.quadColorShader->setMat4("u_projection", s_data.projectionMatrix);
 
-    glBindVertexArray(0);
+	glBindVertexArray(s_data.quadVAO);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+}
+
+void Renderer::drawMesh(const Mesh& mesh, const glm::mat4& modelMatrix)
+{
+
 }
 

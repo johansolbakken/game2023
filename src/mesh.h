@@ -5,31 +5,35 @@
 
 struct aiNode;
 struct aiScene;
+struct aiMesh;
 
 class Mesh
 {
 public:
-    Mesh(const std::string& path);
-    ~Mesh();
+	explicit Mesh(const std::string& path);
 
-    const std::vector<float>& getVertices() const;
-    const std::vector<float>& getNormals() const;
-    const std::vector<float>& getTexCoords() const;
-    const std::vector<uint32_t>& getIndices() const;
+	~Mesh();
 
-    uint32_t getVAO() const;
+	[[nodiscard]] const std::vector<float>& getVertices() const;
+
+	[[nodiscard]] const std::vector<float>& getNormals() const;
+
+	[[nodiscard]] const std::vector<float>& getTexCoords() const;
+
+	[[nodiscard]] const std::vector<uint32_t>& getIndices() const;
+
+	[[nodiscard]] uint32_t getVAO() const;
 
 private:
-    void loadModel(const std::string& path);
-    void processNode(aiNode* node, const aiScene* scene);
+	void loadFbx(const std::string& path);
 
 private:
-    std::vector<float> m_vertices;
-    std::vector<float> m_normals;
-    std::vector<float> m_texCoords;
-    std::vector<uint32_t> m_indices;
+	std::vector<float> m_vertices;
+	std::vector<float> m_normals;
+	std::vector<float> m_texCoords;
+	std::vector<uint32_t> m_indices;
 
-    uint32_t m_vao;
-    uint32_t m_vbo;
-    uint32_t m_ebo;
+	uint32_t m_vao;
+	uint32_t m_vbo;
+	uint32_t m_ebo;
 };

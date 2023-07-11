@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.5)
 
 project(HelloWorld)
 
@@ -15,5 +15,6 @@ target_include_directories(game PUBLIC "src"
                                        "vendor/glfw/include"
                                        "vendor/glad/include"
                                        "vendor/glm"
-                                       "vendor/assimp/include")
+                                       "vendor/assimp/include"
+                                        "vendor/stb_image/include")
 target_link_libraries(game glfw glad assimp)
