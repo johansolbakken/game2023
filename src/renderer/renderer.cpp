@@ -25,7 +25,7 @@ static RendererData s_data = {};
 
 void Renderer::init()
 {
-	s_data.quadColorShader = new Shader("shaders/quad_color.vs", "shaders/quad_color.fs");
+	s_data.quadColorShader = new Shader("assets/shaders/quad_color.vs", "assets/shaders/quad_color.fs");
 
 	std::vector<float> quadVertices = {
 			// positions		// texture coords	// color

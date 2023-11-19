@@ -1,6 +1,7 @@
 #pragma once
 
-#include "window.h"
+#include "core/window.h"
+
 #include "renderer/mesh.h"
 #include "renderer/camera2d.h"
 

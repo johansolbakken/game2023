@@ -4,18 +4,39 @@
 
 #include "renderer/opengl.h"
 
+#include <filesystem>
+#include <iostream>
+
 Shader::Shader(const std::string &vertexShaderSource, const std::string &fragmentShaderSource)
 {
+    if (vertexShaderSource.empty() || fragmentShaderSource.empty())
+    {
+        std::cout << "Shader source is empty" << std::endl;
+        return;
+    }
+
+    if (!std::filesystem::exists(vertexShaderSource))
+    {
+        std::cout << "Vertex shader source file does not exist" << std::endl;
+        return;
+    }
+
+    if (!std::filesystem::exists(fragmentShaderSource))
+    {
+        std::cout << "Fragment shader source file does not exist" << std::endl;
+        return;
+    }
+
     m_id = glCreateProgram();
 
     uint32_t vertexShader = glCreateShader(GL_VERTEX_SHADER);
     const char *vertexShaderSourceCStr = vertexShaderSource.c_str();
-    GL_CALL(glShaderSource(vertexShader, 1, &vertexShaderSourceCStr, NULL));
+    GL_CALL(glShaderSource(vertexShader, 1, &vertexShaderSourceCStr, nullptr));
     GL_CALL(glCompileShader(vertexShader));
 
     uint32_t fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     const char *fragmentShaderSourceCStr = fragmentShaderSource.c_str();
-    GL_CALL(glShaderSource(fragmentShader, 1, &fragmentShaderSourceCStr, NULL));
+    GL_CALL(glShaderSource(fragmentShader, 1, &fragmentShaderSourceCStr, nullptr));
     GL_CALL(glCompileShader(fragmentShader));
 
     GL_CALL(glAttachShader(m_id, vertexShader));
