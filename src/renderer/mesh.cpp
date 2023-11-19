@@ -5,12 +5,10 @@
 #include <assimp/postprocess.h>
 #include <iostream>
 
-#include <glad/glad.h>
-
 Mesh::Mesh(const std::string& file_path)
 {
 	loadFbx(file_path);
-
+/*
 	// create buffers/arrays and fill them with data from the m_vertices and m_indices vectors
 	glGenVertexArrays(1, &m_vao);
 	glGenBuffers(1, &m_vbo);
@@ -33,14 +31,14 @@ Mesh::Mesh(const std::string& file_path)
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 
-	glBindVertexArray(0);
+	glBindVertexArray(0);*/
 }
 
 Mesh::~Mesh()
 {
-	glDeleteVertexArrays(1, &m_vao);
-	glDeleteBuffers(1, &m_vbo);
-	glDeleteBuffers(1, &m_ebo);
+	// glDeleteVertexArrays(1, &m_vao);
+	// glDeleteBuffers(1, &m_vbo);
+	// glDeleteBuffers(1, &m_ebo);
 }
 
 const std::vector<float>& Mesh::getVertices() const

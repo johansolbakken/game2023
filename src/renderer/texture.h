@@ -1,24 +1,21 @@
 #pragma once
 
 #include <string>
+#include <memory>
 
 class Texture
 {
 public:
-	Texture(const std::string& path);
+	virtual ~Texture() = default;
 
-	~Texture();
+	virtual uint32_t getID() const = 0;
 
-	uint32_t getID() const;
+	virtual const std::string& getPath() const = 0;
 
-	const std::string& getPath() const;
+	virtual void bind() const = 0;
 
-	void bind() const;
+	virtual void unbind() const = 0;
 
-	void unbind() const;
-
-private:
-	uint32_t m_id;
-	std::string m_path;
+	static std::shared_ptr<Texture> create(const std::string& path);
 };
 

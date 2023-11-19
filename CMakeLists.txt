@@ -13,11 +13,12 @@ file(GLOB_RECURSE SOURCES "src/**.cpp" "src/**.h")
 add_executable(game ${SOURCES})
 target_include_directories(game PUBLIC "src"
                                        "vendor/glfw/include"
-                                       "vendor/glad/include"
                                        "vendor/glm"
                                        "vendor/assimp/include"
                                         "vendor/stb_image/include")
-target_link_libraries(game glfw glad assimp)
+target_link_libraries(game glfw assimp)
+
+
 
 add_custom_command(TARGET game POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy_directory

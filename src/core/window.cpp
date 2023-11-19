@@ -1,12 +1,11 @@
 #include "window.h"
 
-#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
 
 void error_callback(int error, const char* description)
 {
-	std::cerr << "Error: " << description << std::endl;
+	std::cerr << "[GLFW] Error: " << description << std::endl;
 }
 
 Window::Window()
@@ -19,28 +18,15 @@ Window::Window()
 		return;
 	}
 
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
-	m_window = glfwCreateWindow(800, 600, "OpenGL", nullptr, nullptr);
+	m_window = glfwCreateWindow(800, 600, "Metal", nullptr, nullptr);
 	if (!m_window)
 	{
 		std::cerr << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
 		return;
 	}
-
-	glfwMakeContextCurrent(m_window);
-
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-	{
-		std::cerr << "Failed to initialize GLAD" << std::endl;
-		return;
-	}
-
-	glfwSwapInterval(1);
 }
 
 Window::~Window()
@@ -51,7 +37,6 @@ Window::~Window()
 
 void Window::update()
 {
-	glfwSwapBuffers(m_window);
 	glfwPollEvents();
 }
 

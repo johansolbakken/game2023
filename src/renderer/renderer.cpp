@@ -1,14 +1,11 @@
 #include "renderer.h"
 
-#include <glad/glad.h>
 #include <vector>
 
 #include "shader.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
-#include "renderer/opengl.h"
 
 struct RendererData
 {
@@ -18,14 +15,14 @@ struct RendererData
 
 	glm::mat4 projectionMatrix = glm::mat4(1.0f);
 
-	Shader* quadColorShader = nullptr;
+	std::shared_ptr<Shader> quadColorShader;
 };
 
 static RendererData s_data = {};
 
 void Renderer::init()
 {
-	s_data.quadColorShader = new Shader("assets/shaders/quad_color.vs", "assets/shaders/quad_color.fs");
+	s_data.quadColorShader = Shader::create("assets/shaders/quad_color.vs", "assets/shaders/quad_color.fs");
 
 	std::vector<float> quadVertices = {
 			// positions		// texture coords	// color
@@ -39,7 +36,7 @@ void Renderer::init()
 			0, 1, 2,
 			2, 3, 0
 	};
-
+/*
 	GL_CALL(glGenVertexArrays(1, &s_data.quadVAO));
 	GL_CALL(glGenBuffers(1, &s_data.quadVBO));
 	GL_CALL(glGenBuffers(1, &s_data.quadEBO));
@@ -59,18 +56,18 @@ void Renderer::init()
 	GL_CALL(glEnableVertexAttribArray(1));
 	GL_CALL(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float))));
 
-	GL_CALL(glBindVertexArray(0));
+	GL_CALL(glBindVertexArray(0));*/
 }
 
 void Renderer::clear(const glm::vec4& color)
 {
-	GL_CALL(glClearColor(color.r, color.g, color.b, color.a));
-	GL_CALL(glClear(GL_COLOR_BUFFER_BIT));
+	// GL_CALL(glClearColor(color.r, color.g, color.b, color.a));
+	// GL_CALL(glClear(GL_COLOR_BUFFER_BIT));
 }
 
 void Renderer::updateViewport(int width, int height)
 {
-	GL_CALL(glViewport(0, 0, width, height));
+	// GL_CALL(glViewport(0, 0, width, height));
 }
 
 void Renderer::beginScene(const glm::mat4& viewProjectionMatrix)
@@ -88,8 +85,8 @@ void Renderer::drawQuad(const glm::vec2& position, const glm::vec2& size, const 
 	s_data.quadColorShader->setVec4("u_color", color);
 	s_data.quadColorShader->setMat4("u_projection", s_data.projectionMatrix);
 
-	GL_CALL(glBindVertexArray(s_data.quadVAO));
-	GL_CALL(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
+	// GL_CALL(glBindVertexArray(s_data.quadVAO));
+	// GL_CALL(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
 }
 
 void Renderer::drawMesh(const Mesh& mesh, const glm::mat4& modelMatrix)

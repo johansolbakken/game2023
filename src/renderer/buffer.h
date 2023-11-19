@@ -1,39 +1,30 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 
 class VertexBuffer
 {
 public:
-	VertexBuffer(const std::vector<float> &data);
+	virtual ~VertexBuffer() = default;
 
-	~VertexBuffer();
+	virtual void bind() const = 0;
 
-	void bind() const;
+	virtual void unbind() const = 0;
 
-	void unbind() const;
-
-private:
-	unsigned int m_rendererID;
+	static std::shared_ptr<VertexBuffer> create(const std::vector<float> &data);
 };
 
 class IndexBuffer
 {
 public:
-	IndexBuffer(const std::vector<unsigned int> &data);
+	virtual ~IndexBuffer() = default;
 
-	~IndexBuffer();
+	virtual void bind() const = 0;
 
-	void bind() const;
+	virtual void unbind() const = 0;
 
-	void unbind() const;
+	virtual uint32_t getCount() const = 0;
 
-	inline unsigned int getCount() const
-	{
-		return m_count;
-	}
-
-private:
-	unsigned int m_rendererID;
-	unsigned int m_count;
+	static std::shared_ptr<IndexBuffer> create(const std::vector<uint32_t> &data);
 };
