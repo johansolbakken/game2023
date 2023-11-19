@@ -6,48 +6,50 @@
 
 #include <glad/glad.h>
 
+#include "renderer/opengl.h"
+
 VertexBuffer::VertexBuffer(const std::vector<float>& data)
 {
-	glGenBuffers(1, &m_rendererID);
-	glBindBuffer(GL_ARRAY_BUFFER, m_rendererID);
-	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), &data[0], GL_STATIC_DRAW);
+	GL_CALL(glGenBuffers(1, &m_rendererID));
+	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, m_rendererID));
+	GL_CALL(glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), &data[0], GL_STATIC_DRAW));
 }
 
 VertexBuffer::~VertexBuffer()
 {
-	glDeleteBuffers(1, &m_rendererID);
+	GL_CALL(glDeleteBuffers(1, &m_rendererID));
 }
 
 void VertexBuffer::bind() const
 {
-	glBindBuffer(GL_ARRAY_BUFFER, m_rendererID);
+	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, m_rendererID));
 }
 
 void VertexBuffer::unbind() const
 {
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
 }
 
 IndexBuffer::IndexBuffer(const std::vector<unsigned int>& data)
 {
-	glGenBuffers(1, &m_rendererID);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_rendererID);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, data.size() * sizeof(unsigned int), &data[0], GL_STATIC_DRAW);
+	GL_CALL(glGenBuffers(1, &m_rendererID));
+	GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_rendererID));
+	GL_CALL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, data.size() * sizeof(unsigned int), &data[0], GL_STATIC_DRAW));
 	m_count = data.size();
 }
 
 IndexBuffer::~IndexBuffer()
 {
-	glDeleteBuffers(1, &m_rendererID);
+	GL_CALL(glDeleteBuffers(1, &m_rendererID));
 }
 
 void IndexBuffer::bind() const
 {
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_rendererID);
+	GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_rendererID));
 }
 
 void IndexBuffer::unbind() const
 {
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 }
 

@@ -10,16 +10,18 @@
 
 #include <iostream>
 
+#include "renderer/opengl.h"
+
 Texture::Texture(const std::string &file_path)
 {
-	glGenTextures(1, &m_id);
-	glBindTexture(GL_TEXTURE_2D, m_id);
+	GL_CALL(glGenTextures(1, &m_id));
+	GL_CALL(glBindTexture(GL_TEXTURE_2D, m_id));
 
 	// set the texture wrapping/filtering options (on the currently bound texture object)
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
+	GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
+	GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+	GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 
 	// load and generate the texture
 	int width, height, nrChannels;
@@ -40,8 +42,8 @@ Texture::Texture(const std::string &file_path)
 		{
 			format = GL_RGBA;
 		}
-		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
+		GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data));
+		GL_CALL(glGenerateMipmap(GL_TEXTURE_2D));
 	}
 	else
 	{
@@ -52,15 +54,15 @@ Texture::Texture(const std::string &file_path)
 
 Texture::~Texture()
 {
-	glDeleteTextures(1, &m_id);
+	GL_CALL(glDeleteTextures(1, &m_id));
 }
 
 void Texture::bind() const
 {
-	glBindTexture(GL_TEXTURE_2D, m_id);
+	GL_CALL(glBindTexture(GL_TEXTURE_2D, m_id));
 }
 
 void Texture::unbind() const
 {
-	glBindTexture(GL_TEXTURE_2D, 0);
+	GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
 }
