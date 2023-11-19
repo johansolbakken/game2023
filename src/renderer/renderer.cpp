@@ -59,6 +59,13 @@ void Renderer::init()
 	GL_CALL(glBindVertexArray(0));*/
 }
 
+void Renderer::shutdown()
+{
+	// GL_CALL(glDeleteVertexArrays(1, &s_data.quadVAO));
+	// GL_CALL(glDeleteBuffers(1, &s_data.quadVBO));
+	// GL_CALL(glDeleteBuffers(1, &s_data.quadEBO));
+}
+
 void Renderer::clear(const glm::vec4& color)
 {
 	// GL_CALL(glClearColor(color.r, color.g, color.b, color.a));

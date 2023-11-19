@@ -14,6 +14,7 @@ Game::Game()
 
 Game::~Game()
 {
+	Renderer::shutdown();
 }
 
 void Game::run()

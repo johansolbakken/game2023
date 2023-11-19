@@ -2,8 +2,7 @@
 
 #include <glm/glm.hpp>
 
-class MetalRendererApi 
-{
+class RendererApi {
 public:
     static void init();
     static void shutdown();
