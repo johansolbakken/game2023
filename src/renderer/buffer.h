@@ -5,7 +5,7 @@
 class VertexBuffer
 {
 public:
-	VertexBuffer(const std::vector<float>& data);
+	VertexBuffer(const std::vector<float> &data);
 
 	~VertexBuffer();
 
@@ -20,7 +20,7 @@ private:
 class IndexBuffer
 {
 public:
-	IndexBuffer(const std::vector<unsigned int>& data);
+	IndexBuffer(const std::vector<unsigned int> &data);
 
 	~IndexBuffer();
 
@@ -37,4 +37,3 @@ private:
 	unsigned int m_rendererID;
 	unsigned int m_count;
 };
-

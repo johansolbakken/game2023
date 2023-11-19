@@ -9,7 +9,7 @@ add_subdirectory(vendor/glfw)
 add_subdirectory(vendor/glad)
 add_subdirectory(vendor/assimp)
 
-file(GLOB_RECURSE SOURCES "src/*.cpp")
+file(GLOB_RECURSE SOURCES "src/**.cpp" "src/**.h")
 add_executable(game ${SOURCES})
 target_include_directories(game PUBLIC "src"
                                        "vendor/glfw/include"

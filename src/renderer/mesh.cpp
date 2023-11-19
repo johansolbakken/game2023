@@ -7,8 +7,6 @@
 
 #include <glad/glad.h>
 
-#include "texture.h"
-
 Mesh::Mesh(const std::string& file_path)
 {
 	loadFbx(file_path);
